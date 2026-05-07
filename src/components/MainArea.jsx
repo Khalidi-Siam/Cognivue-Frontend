@@ -145,7 +145,6 @@ const MainArea = () => {
               onChange={onFileChange} 
               accept=".pdf" 
               className="hidden" 
-              multiple 
             />
             
             <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center">

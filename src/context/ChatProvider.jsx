@@ -122,30 +122,34 @@ export const ChatProvider = ({ children }) => {
     const currentId = sessionIdRef.current;
     if (!files.length || !currentId) return;
 
-    for (const file of files) {
-      const formData = new FormData();
-      formData.append('file', file);
-      try {
-        const response = await fetch(`${API_BASE_URL}session/${currentId}/upload`, {
-          method: 'POST',
-          body: formData,
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setUploadedDocs(prev => [...prev, {
-            name: data.filename,
-            size: (data.file_size / 1024 / 1024).toFixed(1) + ' MB',
-            date: new Date().toLocaleDateString(),
-            id: data.document_id,
-            status: data.status
-          }]);
-        } else {
-          console.error('Failed to upload file:', file.name);
-        }
-      } catch (error) {
-        console.error('Failed to upload file:', file.name, error);
+    if (files.length > 1) {
+      alert("Please upload only one PDF at a time.");
+    }
+
+    const file = files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}session/${currentId}/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUploadedDocs(prev => [...prev, {
+          name: data.filename,
+          size: (data.file_size / 1024 / 1024).toFixed(1) + ' MB',
+          date: new Date().toLocaleDateString(),
+          id: data.document_id,
+          status: data.status
+        }]);
+      } else {
+        console.error('Failed to upload file:', file.name);
       }
+    } catch (error) {
+      console.error('Failed to upload file:', file.name, error);
     }
   };
 

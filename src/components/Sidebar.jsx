@@ -43,7 +43,6 @@ const Sidebar = () => {
             ref={fileInputRef} 
             onChange={onFileChange} 
             className="hidden" 
-            multiple 
             accept=".pdf"
           />
           <button
@@ -52,6 +51,11 @@ const Sidebar = () => {
           >
             <i className="fa-solid fa-cloud-arrow-up"></i>
           </button>
+        </div>
+        <div className="px-2 mb-4">
+          <p className="text-[10px] text-app-muted leading-tight">
+            One PDF per upload. You can upload multiple PDFs in each session.
+          </p>
         </div>
 
         <div className="flex-1 overflow-y-auto space-y-1 pr-1">
