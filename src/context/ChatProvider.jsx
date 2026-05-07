@@ -53,12 +53,31 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
+  const fetchDocuments = async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}session/${id}/documents`);
+      const data = await response.json();
+      if (data?.documents) {
+        setUploadedDocs(data.documents.map(doc => ({
+          name: doc.filename,
+          size: (doc.file_size / 1024 / 1024).toFixed(1) + ' MB',
+          date: doc.uploaded_at ? new Date(doc.uploaded_at).toLocaleDateString() : new Date().toLocaleDateString(),
+          id: doc.id,
+          status: doc.status
+        })));
+      }
+    } catch (error) {
+      console.error('Failed to fetch documents:', error);
+    }
+  };
+
   useEffect(() => {
     if (initCalledRef.current) return;
     initCalledRef.current = true;
 
     if (sessionIdRef.current) {
       fetchMessages(sessionIdRef.current);
+      fetchDocuments(sessionIdRef.current);
     } else {
       initSession();
     }
@@ -103,22 +122,27 @@ export const ChatProvider = ({ children }) => {
     const currentId = sessionIdRef.current;
     if (!files.length || !currentId) return;
 
-    const newDocs = Array.from(files).map(file => ({
-      name: file.name,
-      size: (file.size / 1024 / 1024).toFixed(1) + ' MB',
-      date: new Date().toLocaleDateString(),
-      id: Date.now() + Math.random()
-    }));
-    setUploadedDocs(prev => [...prev, ...newDocs]);
-
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
       try {
-        await fetch(`${API_BASE_URL}session/${currentId}/upload`, {
+        const response = await fetch(`${API_BASE_URL}session/${currentId}/upload`, {
           method: 'POST',
           body: formData,
         });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUploadedDocs(prev => [...prev, {
+            name: data.filename,
+            size: (data.file_size / 1024 / 1024).toFixed(1) + ' MB',
+            date: new Date().toLocaleDateString(),
+            id: data.document_id,
+            status: data.status
+          }]);
+        } else {
+          console.error('Failed to upload file:', file.name);
+        }
       } catch (error) {
         console.error('Failed to upload file:', file.name, error);
       }

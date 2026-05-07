@@ -68,15 +68,27 @@ const Sidebar = () => {
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-[10px] text-app-muted">{doc.size}</span>
                     <span className="w-1 h-1 rounded-full bg-app-border"></span>
-                    <span className="text-[10px] text-app-muted">Indexed</span>
+                    <span className="text-[10px] text-app-muted">
+                      {doc.status === 'indexed' ? 'Indexed' : 'Processing'}
+                    </span>
                   </div>
                 </div>
-                <button
-                  onClick={() => removeDoc(doc.id)}
-                  className="text-app-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+                <div 
+                  title={doc.status === 'indexed' ? "once indexed you can't remove this" : "Remove document"}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center"
                 >
-                  <i className="fa-solid fa-trash-can text-xs"></i>
-                </button>
+                  <button
+                    onClick={() => doc.status !== 'indexed' && removeDoc(doc.id)}
+                    disabled={doc.status === 'indexed'}
+                    className={`p-1 ${
+                      doc.status === 'indexed' 
+                        ? 'text-app-muted/50 cursor-not-allowed' 
+                        : 'text-app-muted hover:text-red-400'
+                    }`}
+                  >
+                    <i className="fa-solid fa-trash-can text-xs"></i>
+                  </button>
+                </div>
               </div>
             ))
           )}
