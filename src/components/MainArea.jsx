@@ -175,9 +175,6 @@ const MainArea = () => {
               <i className="fa-solid fa-arrow-up"></i>
             </button>
           </form>
-          <div className="text-center mt-3">
-            <p className="text-[10px] font-medium text-app-muted/40 tracking-wider">COGNIVUE V2.1 • SECURE LOCAL ENVIRONMENT</p>
-          </div>
         </div>
       </div>
     </main>
